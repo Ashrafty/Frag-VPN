@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -74,7 +76,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                 // Overlay
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5),
+                    color: Colors.black.withAlpha(128),
                   ),
                   child: Center(
                     child: Container(
@@ -91,7 +93,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                 // Processing indicator
                 if (_isProcessing)
                   Container(
-                    color: Colors.black.withOpacity(0.7),
+                    color: Colors.black.withAlpha(179),
                     child: const Center(
                       child: CircularProgressIndicator(
                         color: AppTheme.primaryColor,
@@ -111,7 +113,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppTheme.errorColor.withOpacity(0.1),
+                      color: AppTheme.errorColor.withAlpha(25),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
@@ -166,12 +168,27 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
 
     if (code == null) return;
 
-    // Check if it's an Outline VPN configuration
-    if (!code.startsWith('ss://')) {
+    debugPrint('QR code detected: ${code.substring(0, min(20, code.length))}...');
+
+    // Process the scanned code
+    String processedCode = code.trim();
+
+    // Clean up the code - remove whitespace
+    processedCode = processedCode.replaceAll(RegExp(r'\s+'), '');
+
+    // Check if it contains an Outline VPN configuration
+    if (!processedCode.contains('ss://')) {
       setState(() {
         _errorMessage = 'Invalid QR code. Not an Outline VPN configuration.';
       });
       return;
+    }
+
+    // Extract the ss:// part if it's embedded in a larger string
+    final ssIndex = processedCode.indexOf('ss://');
+    if (ssIndex > 0) {
+      processedCode = processedCode.substring(ssIndex);
+      debugPrint('Extracted ss:// part: ${processedCode.substring(0, min(20, processedCode.length))}...');
     }
 
     setState(() {
@@ -181,7 +198,8 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
 
     try {
       final vpnProvider = Provider.of<VpnProvider>(context, listen: false);
-      final success = await vpnProvider.importServer(code);
+      debugPrint('Attempting to import server from QR code');
+      final success = await vpnProvider.importServer(processedCode);
 
       if (success) {
         if (mounted) {
@@ -201,6 +219,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
         });
       }
     } catch (e) {
+      debugPrint('Error importing server from QR code: $e');
       setState(() {
         _isProcessing = false;
         _errorMessage = 'Error importing server: $e';

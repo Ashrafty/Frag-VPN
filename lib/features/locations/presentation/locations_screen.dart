@@ -58,7 +58,7 @@ class LocationsScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'Import an Outline VPN configuration to get started',
+                              'Import a configuration to get started',
                               textAlign: TextAlign.center,
                               style: AppTheme.bodyMedium.copyWith(
                                 color: AppTheme.textSecondaryColor,

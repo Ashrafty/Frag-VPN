@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -26,12 +28,30 @@ class _ImportServerDialogState extends State<ImportServerDialog> {
   }
 
   Future<void> _importServer() async {
-    final outlineKey = _controller.text.trim();
+    String outlineKey = _controller.text.trim();
     if (outlineKey.isEmpty) {
       setState(() {
         _errorMessage = 'Please enter a valid Outline VPN configuration';
       });
       return;
+    }
+
+    // Try to clean up the input
+    // Sometimes users copy with extra characters or line breaks
+    outlineKey = outlineKey.replaceAll(RegExp(r'\s+'), '');
+
+    // Make sure it starts with ss://
+    if (!outlineKey.startsWith('ss://')) {
+      // Check if it's a URL that contains ss:// somewhere
+      final ssIndex = outlineKey.indexOf('ss://');
+      if (ssIndex >= 0) {
+        outlineKey = outlineKey.substring(ssIndex);
+      } else {
+        setState(() {
+          _errorMessage = 'Invalid format. Configuration must start with ss://';
+        });
+        return;
+      }
     }
 
     setState(() {
@@ -41,6 +61,10 @@ class _ImportServerDialogState extends State<ImportServerDialog> {
 
     try {
       final vpnProvider = Provider.of<VpnProvider>(context, listen: false);
+
+      // Log the configuration for debugging
+      debugPrint('Attempting to import configuration: ${outlineKey.substring(0, min(20, outlineKey.length))}...');
+
       final success = await vpnProvider.importServer(outlineKey);
 
       if (success) {
@@ -49,11 +73,12 @@ class _ImportServerDialogState extends State<ImportServerDialog> {
         }
       } else {
         setState(() {
-          _errorMessage = 'Invalid Outline VPN configuration';
+          _errorMessage = 'Invalid Outline VPN configuration. Please check the format and try again.';
           _isLoading = false;
         });
       }
     } catch (e) {
+      debugPrint('Error importing server: $e');
       setState(() {
         _errorMessage = 'Error importing server: $e';
         _isLoading = false;
