@@ -40,7 +40,7 @@ Frag VPN is a modern, user-friendly VPN client specifically designed to work wit
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/yourusername/frag_vpn.git
+git clone https://github.com/Ashrafty/Frag-VPN.git
 cd frag_vpn
 ```
 
