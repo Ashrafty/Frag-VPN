@@ -1,0 +1,78 @@
+buildscript {
+    ext.kotlin_version = '1.8.22'
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.1.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        // Add a flat directory repository for the AAR file
+        flatDir {
+            dirs 'libs'
+        }
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion 34
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = '11'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        // Include the AAR files in the assets
+        main.assets.srcDirs += 'libs'
+    }
+
+    defaultConfig {
+        minSdkVersion 21
+        // Add a unique namespace to prevent BuildConfig class conflicts
+        namespace 'com.example.flutter_outline_vpn.plugin'
+
+        // Enable MultiDex
+        multiDexEnabled true
+    }
+
+    // Don't compress AAR files
+    aaptOptions {
+        noCompress 'aar'
+    }
+
+    // Handle duplicate class errors
+    packagingOptions {
+        // Use pickFirst strategy to resolve duplicate classes
+        pickFirst "**/libgojni.so"
+        pickFirst "**/*.so"
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1'
+
+    // MultiDex support
+    implementation 'androidx.multidex:multidex:2.0.1'
+
+    // Reference the AAR files
+    // Use only the tun2socks AAR
+    api(name: 'tun2socks', ext: 'aar')
+}
