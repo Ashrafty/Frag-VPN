@@ -3,8 +3,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/locations/presentation/locations_screen.dart';
-import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/qr_scanner/presentation/qr_scanner_screen.dart';
+import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/statistics/presentation/statistics_screen.dart';
 import '../constants/app_constants.dart';
 
@@ -34,9 +34,9 @@ class AppRouter {
         },
       ),
       GoRoute(
-        path: AppConstants.profileRoute,
+        path: AppConstants.settingsRoute,
         builder: (BuildContext context, GoRouterState state) {
-          return const ProfileScreen();
+          return const SettingsScreen();
         },
       ),
       GoRoute(

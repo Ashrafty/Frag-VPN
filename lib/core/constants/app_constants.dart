@@ -10,7 +10,7 @@ class AppConstants {
   static const String homeRoute = '/';
   static const String locationsRoute = '/locations';
   static const String statisticsRoute = '/statistics';
-  static const String profileRoute = '/profile';
+  static const String settingsRoute = '/settings';
   static const String qrScannerRoute = '/qr-scanner';
 
   // Shared Preferences Keys

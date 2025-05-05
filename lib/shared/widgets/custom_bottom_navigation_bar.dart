@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_constants.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
@@ -14,6 +15,8 @@ class CustomBottomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+
     return Container(
       decoration: const BoxDecoration(
         color: AppTheme.backgroundColor,
@@ -33,30 +36,30 @@ class CustomBottomNavigationBar extends StatelessWidget {
               _buildNavItem(
                 context,
                 icon: Icons.shield,
-                label: 'Protect',
+                label: localizations.translate('home'),
                 index: 0,
                 route: AppConstants.homeRoute,
               ),
               _buildNavItem(
                 context,
                 icon: Icons.location_on,
-                label: 'Locations',
+                label: localizations.translate('locations'),
                 index: 1,
                 route: AppConstants.locationsRoute,
               ),
               _buildNavItem(
                 context,
                 icon: Icons.bar_chart,
-                label: 'Stats',
+                label: localizations.translate('statistics'),
                 index: 2,
                 route: AppConstants.statisticsRoute,
               ),
               _buildNavItem(
                 context,
-                icon: Icons.person,
-                label: 'Profile',
+                icon: Icons.settings,
+                label: localizations.translate('settings'),
                 index: 3,
-                route: AppConstants.profileRoute,
+                route: AppConstants.settingsRoute,
               ),
             ],
           ),
@@ -73,7 +76,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
     required String route,
   }) {
     final isSelected = currentIndex == index;
-    
+
     return InkWell(
       onTap: () {
         if (!isSelected) {
